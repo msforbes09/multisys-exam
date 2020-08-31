@@ -2,51 +2,39 @@
 
 namespace Tests\Feature;
 
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
 {
-    use WithFaker, RefreshDatabase;
+    use RefreshDatabase;
 
     /** @test*/
     public function a_user_can_register()
     {
-        $credentials = $this->createCredentials();
+        $user = factory(User::class)->raw();
 
-        $response = $this->post('/api/register', $credentials);
-
-        $this->assertDataBaseHas('users', ['email' => $credentials['email']]);
-
-        $response
+        $this->post('/api/register', $user)
             ->assertStatus(201)
             ->assertJson([
                 'message' => 'User successfully registered.',
             ]);
+
+        $this->assertDataBaseHas('users', ['email' => $user['email']]);
     }
 
     /** @test*/
-    public function an_emeail_wont_registered_twice()
+    public function an_email_wont_registered_twice()
     {
-        $credentials = $this->createCredentials();
+        $user = factory(User::class)->raw();
 
-        $this->post('/api/register', $credentials);
+        $this->post('/api/register', $user);
 
-        $response = $this->post('/api/register', $credentials);
-
-        $response
+        $this->post('/api/register', $user)
             ->assertStatus(400)
             ->assertJson([
                 'message' => 'Email already taken.',
             ]);
-    }
-
-    protected function createCredentials()
-    {
-        return [
-            'email' => $this->faker->email,
-            'password' => $this->faker->password,
-        ];
     }
 }
