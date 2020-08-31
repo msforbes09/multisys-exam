@@ -47,12 +47,6 @@ class AuthController extends Controller
         ]);
     }
 
-    protected function response(string $message, int $status)
-    {
-        return response()
-            ->json([ 'message' => $message ], $status);
-    }
-
     protected function getUser(Request $request) : ?User
     {
         return User::where('email', $request->get('email'))->first();

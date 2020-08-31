@@ -29,12 +29,6 @@ class ProductController extends Controller
         return Product::find( $request->get('product_id') );
     }
 
-    protected function response($message, $status)
-    {
-        return response()
-            ->json([ 'message' => $message ], $status);
-    }
-
     protected function checkAvailability(Product $product, int $quantity) : bool
     {
         return $product->stock >= $quantity;
